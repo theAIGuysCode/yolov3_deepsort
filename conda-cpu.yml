@@ -9,6 +9,5 @@ dependencies:
     - tensorflow==2.0.1
     - lxml
     - tqdm
-    - flask
     - seaborn
     - pillow
