@@ -10,11 +10,11 @@ This repository implements YOLOv3 and Deep SORT in order to perfrom real-time ob
 ```bash
 # Tensorflow CPU
 conda env create -f conda-cpu.yml
-conda activate yolov3-object-detection-cpu
+conda activate tracker-cpu
 
 # Tensorflow GPU
 conda env create -f conda-gpu.yml
-conda activate yolov3-object-detection-gpu
+conda activate tracker-gpu
 ```
 
 #### Pip
@@ -86,8 +86,12 @@ python object_tracker.py --video ./data/video/test.mp4 --output ./data/video/res
 The output flag saves your object tracker results as an avi file for you to watch back. It is not necessary to have the flag if you don't want to save the resulting video.
 
 There is a test video uploaded in the data/video folder called test.mp4. If you followed all the steps properly with the pretrained coco yolov3.weights model then when your run the object tracker wiht the first command above you should see the following.
-
+#### Video Example
 ![Demo of Object Tracker](data/helpers/demo.gif)
+
+#### Webcam Example
+This is a demo of running the object tracker using the above command for running the object tracker on your webcam.
+![Webcam Demo](data/helpers/webcam_demo.gif)
 
 ## Command Line Args Reference
 ```
@@ -118,6 +122,15 @@ object_tracker.py:
   --num_classes: number of classes in the model
     (default: '80')
     (an integer)
+  --yolo_max_boxes: maximum number of detections at one time
+    (default: '100')
+    (an integer)
+  --yolo_iou_threshold: iou threshold for how close two boxes can be before they are detected as one box
+    (default: 0.5)
+    (a float)
+  --yolo_score_threshold: score threshold for confidence level in detection for detection to count
+    (default: 0.5)
+    (a float)
 ```
 
 ## Acknowledgments
