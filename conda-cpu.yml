@@ -1,4 +1,4 @@
-name: yolov3-object-detection-cpu
+name: tracker-cpu
 
 dependencies:
   - python==3.7
