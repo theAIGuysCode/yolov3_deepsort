@@ -3,7 +3,7 @@ import numpy as np
 import cv2
 
 
-def non_max_suppression(boxes, max_bbox_overlap, scores=None):
+def non_max_suppression(boxes, classes, max_bbox_overlap, scores=None):
     """Suppress overlapping detections.
 
     Original code from [1]_ has been adapted to include confidence score.
@@ -15,6 +15,7 @@ def non_max_suppression(boxes, max_bbox_overlap, scores=None):
     --------
 
         >>> boxes = [d.roi for d in detections]
+        >>> classes = [d.classes for d in detections]
         >>> scores = [d.confidence for d in detections]
         >>> indices = non_max_suppression(boxes, max_bbox_overlap, scores)
         >>> detections = [detections[i] for i in indices]
