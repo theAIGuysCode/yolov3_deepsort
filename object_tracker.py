@@ -23,7 +23,7 @@ flags.DEFINE_string('weights', './weights/yolov3.tf',
                     'path to weights file')
 flags.DEFINE_boolean('tiny', False, 'yolov3 or yolov3-tiny')
 flags.DEFINE_integer('size', 416, 'resize images to')
-flags.DEFINE_string('video', './data/video/paris.mp4',
+flags.DEFINE_string('video', './data/video/test.mp4',
                     'path to video file or number for webcam)')
 flags.DEFINE_string('output', None, 'path to output video')
 flags.DEFINE_string('output_format', 'XVID', 'codec used in VideoWriter when saving video to file')
@@ -57,8 +57,6 @@ def main(_argv):
     class_names = [c.strip() for c in open(FLAGS.classes).readlines()]
     logging.info('classes loaded')
 
-    times = []
-
     try:
         vid = cv2.VideoCapture(int(FLAGS.video))
     except:
@@ -71,7 +69,6 @@ def main(_argv):
         width = int(vid.get(cv2.CAP_PROP_FRAME_WIDTH))
         height = int(vid.get(cv2.CAP_PROP_FRAME_HEIGHT))
         fps = int(vid.get(cv2.CAP_PROP_FPS))
-        #print("fps: ", fps)
         codec = cv2.VideoWriter_fourcc(*FLAGS.output_format)
         out = cv2.VideoWriter(FLAGS.output, codec, fps, (width, height))
         list_file = open('detection.txt', 'w')
@@ -97,11 +94,14 @@ def main(_argv):
 
         t1 = time.time()
         boxes, scores, classes, nums = yolo.predict(img_in)
+        classes = classes[0]
+        names = []
+        for i in range(len(classes)):
+            names.append(class_names[int(classes[i])])
+        names = np.array(names)
         converted_boxes = convert_boxes(img, boxes[0])
-        #print(converted_boxes)
         features = encoder(img, converted_boxes)    
-        #score to 1.0 here, change in future to use scores
-        detections = [Detection(bbox, score, cls, feature) for bbox, score, cls, feature in zip(converted_boxes, scores[0], classes[0], features)]
+        detections = [Detection(bbox, score, class_name, feature) for bbox, score, class_name, feature in zip(converted_boxes, scores[0], names, features)]
         
         #initialize color map
         cmap = plt.get_cmap('tab20b')
@@ -110,7 +110,8 @@ def main(_argv):
         # run non-maxima suppresion
         boxs = np.array([d.tlwh for d in detections])
         scores = np.array([d.confidence for d in detections])
-        indices = preprocessing.non_max_suppression(boxs, nms_max_overlap, scores)
+        classes = np.array([d.class_name for d in detections])
+        indices = preprocessing.non_max_suppression(boxs, classes, nms_max_overlap, scores)
         detections = [detections[i] for i in indices]        
 
         # Call the tracker
@@ -121,12 +122,14 @@ def main(_argv):
             if not track.is_confirmed() or track.time_since_update > 1:
                 continue 
             bbox = track.to_tlbr()
+            class_name = track.get_class()
             color = colors[int(track.track_id) % len(colors)]
             color = [i * 255 for i in color]
             cv2.rectangle(img, (int(bbox[0]), int(bbox[1])), (int(bbox[2]), int(bbox[3])), color, 2)
-            cv2.rectangle(img, (int(bbox[0]), int(bbox[1]-25)), (int(bbox[0]+60), int(bbox[1])), color, -1)
-            cv2.putText(img, str(track.track_id),(int(bbox[0]), int(bbox[1])),0, 5e-3 * 200, (255,255,255),2)
+            cv2.rectangle(img, (int(bbox[0]), int(bbox[1]-30)), (int(bbox[0])+(len(class_name)+len(str(track.track_id)))*17, int(bbox[1])), color, -1)
+            cv2.putText(img, class_name + "-" + str(track.track_id),(int(bbox[0]), int(bbox[1]-10)),0, 0.75, (255,255,255),2)
             
+        ### UNCOMMENT BELOW IF YOU WANT CONSTANTLY CHANGING YOLO DETECTIONS TO BE SHOWN ON SCREEN
         #for det in detections:
         #    bbox = det.to_tlbr() 
         #    cv2.rectangle(img,(int(bbox[0]), int(bbox[1])), (int(bbox[2]), int(bbox[3])),(255,0,0), 2)
