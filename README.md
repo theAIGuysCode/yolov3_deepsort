@@ -29,7 +29,7 @@ pip install -r requirements-gpu.txt
 ### Nvidia Driver (For GPU, if you haven't set it up already)
 ```bash
 # Ubuntu 18.04
-sudo apt-add-repository -r ppa:graphics-drivers/ppa
+sudo add-apt-repository ppa:graphics-drivers/ppa
 sudo apt install nvidia-driver-430
 # Windows/Other
 https://www.nvidia.com/Download/index.aspx
