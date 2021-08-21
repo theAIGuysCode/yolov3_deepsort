@@ -152,7 +152,7 @@ def main(_argv):
         if cv2.waitKey(1) == ord('q'):
             break
     vid.release()
-    if FLAGS.ouput:
+    if FLAGS.output:
         out.release()
         list_file.close()
     cv2.destroyAllWindows()
