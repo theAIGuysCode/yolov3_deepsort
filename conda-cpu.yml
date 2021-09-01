@@ -1,10 +1,11 @@
 name: tracker-cpu
-
+channels:
+  - conda-forge
 dependencies:
   - python==3.7
   - pip
   - matplotlib
-  - opencv
+  - opencv==4.1.0
   - pip:
     - tensorflow==2.0.3
     - lxml

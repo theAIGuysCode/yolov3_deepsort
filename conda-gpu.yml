@@ -1,10 +1,11 @@
-name: tracker-gpu
-
+name: yolov3_deepsort
+channels:
+  - conda-forge
 dependencies:
   - python==3.7
   - pip
   - matplotlib
-  - opencv
+  - opencv==4.1.0
   - cudnn
   - cudatoolkit==10.1.243
   - pip:
